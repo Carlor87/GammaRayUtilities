@@ -1,6 +1,5 @@
 import os,sys
 import numpy as np
-import pandas as pd
 
 class redshift:
   '''
@@ -116,6 +115,10 @@ class redshift:
           #at the end of the cycle the redshift value is bracketed between i and i-1.
       for j in range(len(self._energy)):
         self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
+    if (model != 1 and model != 2):
+      print "Allowed numbers are only 1 (Franceschini, 2008) or 2 (Dominguez, 2011)\nPlease choose either 1 or 2\n"
+      
+
     
     
     
