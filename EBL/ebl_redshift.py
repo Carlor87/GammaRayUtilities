@@ -2,29 +2,34 @@ import os,sys
 import numpy as np
 
 class redshift:
-  '''
-  Class to consider the contribution of the Extragalactic Background Light (EBL) on gamma ray data,
-  In the initialization it is possible to choose between the EBL model developed by Franceschini et al. (2008)
-  and the model developed by Dominguez (2011).
-  '''
+    '''
+    Class to consider the contribution of the Extragalactic Background Light (EBL) on gamma ray data,
+    In the initialization it is possible to choose between the EBL model developed by Franceschini et al. (2008)
+    and the model developed by Dominguez (2011).
+    For model 1 (Franceschini,2008), zeta between 0.01 and 3.
+    for model 2 (Dominguez,2011), zeta between 0.01 and 2.
+    For redshifts lower than these values, the interpolation is done with 0
+    and the results might not be accurate
+    '''
     
-  def __init__(self,zeta,model):
-    '''
-    zeta = redshift of the gamma-ray source
-    for model 1, zeta between 0.01 and 3.
-    for model 2, zeta between 0.01 and 2.
-    lower redshifts are interpolated with 0 -> might not be very accurate
-    model = {1,2} to choose the EBL model:
-      choose model==1 for Franceschini,2008
-      choose model==2 for Dominguez,2011
-    '''
-    if model==1:
-      '''
-      Franceschini(2008)
-      '''
-      self._zarray=[0.01,0.03,0.1,0.3,0.5,1.0,1.5,2.0,3.0]
-      self._energy=[0.0200,0.0240,0.0289,0.0347,0.0417,0.0502,0.0603,0.0726,0.0873,0.104 ,0.126 ,0.151 ,0.182 ,0.219 ,0.263 ,0.316 ,0.381 ,0.458 ,0.550 ,0.662 ,0.796 ,0.957 , 1.15 , 1.38 , 1.66 , 2.000, 2.40 , 2.89 ,3.47 , 4.17 , 5.02 , 6.03 , 7.26 , 8.73 , 10.5 , 12.6 , 15.2 , 18.2 , 21.9 , 26.4 , 31.7 , 38.1 , 45.8 , 55.1 , 66.2 , 79.6 , 95.7 , 115. , 138. , 166. ] #in TeV
-      self._tautable=np.array([[0.0000,   0.0000,   0.0000,  0.000000,  0.0000021,  0.00493,      0.0399,      0.1157, 0.2596],
+    def __init__(self,zeta,model):
+        '''
+        zeta = redshift of the gamma-ray source
+        for model 1, zeta between 0.01 and 3.
+        for model 2, zeta between 0.01 and 2.
+        lower redshifts are interpolated with 0 -> might not be very accurate
+        model = {1,2} to choose the EBL model:
+        choose model==1 for Franceschini,2008
+        choose model==2 for Dominguez,2011
+        '''
+        self._model = model
+        if (model==1 and zeta<=3):
+            '''
+            Franceschini(2008)
+            '''
+            self._zarray=[0.01,0.03,0.1,0.3,0.5,1.0,1.5,2.0,3.0]
+            self._energy=[0.0200,0.0240,0.0289,0.0347,0.0417,0.0502,0.0603,0.0726,0.0873,0.104 ,0.126 ,0.151 ,0.182 ,0.219 ,0.263 ,0.316 ,0.381 ,0.458 ,0.550 ,0.662 ,0.796 ,0.957 , 1.15 , 1.38 , 1.66 , 2.000, 2.40 , 2.89 ,3.47 , 4.17 , 5.02 , 6.03 , 7.26 , 8.73 , 10.5 , 12.6 , 15.2 , 18.2 , 21.9 , 26.4 , 31.7 , 38.1 , 45.8 , 55.1 , 66.2 , 79.6 , 95.7 , 115. , 138. , 166. ] #in TeV
+            self._tautable=np.array([[0.0000,   0.0000,   0.0000,  0.000000,  0.0000021,  0.00493,      0.0399,      0.1157, 0.2596],
                     [0.0000,   0.0000,   0.0000,  0.000000,  0.000188,   0.01284,     0.0718,      0.1783, 0.3635],
                     [0.0000,   0.0000,   0.0000,  0.000000,  0.001304,   0.0279   ,   0.1188,      0.2598, 0.4919],
                     [0.0000,   0.0000,   0.0000,  0.000488, 0.004558,0.0533       ,  0.1833,      0.3635, 0.6517],
@@ -74,21 +79,24 @@ class redshift:
                     [18.24 ,  54.98 ,195.8,  705.7 ,    1320.,2823.,       3915.,      4540., 4945. ],
                     [20.01 ,  59.82 ,210.8,  735.5 ,    1340.,2823.,       3915.,      4540., 4945. ],
                     [21.20 ,  63.03 ,219.8,  744.0 ,    1340.,2823.,       3915.,      4540., 4945. ]]).T
-      self._ebl_tau_red_interp=np.zeros(len(self._energy))
-      self.redshift=zeta
-      for i in range(len(self._zarray)-1):
-        if (self.redshift<self._zarray[i]):
-          break
-          #at the end of the cycle the redshift value is bracketed between i and i-1.
-      for j in range(len(self._energy)):
-        self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
+            self._ebl_tau_red_interp=np.zeros(len(self._energy))
+            self.redshift=zeta
+            for i in range(len(self._zarray)-1):
+                if (self.redshift<self._zarray[i]):
+                    break
+                #at the end of the cycle the redshift value is bracketed between i and i-1.
+                for j in range(len(self._energy)):
+                    self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
+        if (model == 1 and zeta>3):
+            raise ValueError("Redshift outside boundary [0-3] for this model!")
     
-    if model == 2:
-      '''
-      Dominguez(2011)
-      '''
-      self.fil=open("ebl_dominguez_tau.dat",'r') #depends on external file
-      self._zarray=np.array([ 0.01      ,  0.02526316,  0.04052632,  0.05578947,  0.07105263,\
+    
+        if (model == 2 and zeta <= 2):
+            '''
+            Dominguez(2011)
+            '''
+            self._fil=open("ebl_dominguez_tau.dat",'r') #depends on external file
+            self._zarray=np.array([ 0.01      ,  0.02526316,  0.04052632,  0.05578947,  0.07105263,\
                               0.08631579,  0.10157895,  0.11684211,  0.13210526,  0.14736842,\
                               0.16263158,  0.17789474,  0.19315789,  0.20842105,  0.22368421,\
                               0.23894737,  0.25421053,  0.26947368,  0.28473684,  0.3       ,\
@@ -96,64 +104,88 @@ class redshift:
                               0.6       ,  0.65      ,  0.7       ,  0.75      ,  0.8       ,\
                               0.85      ,  0.9       ,  0.95      ,  1.        ,  1.2       ,\
                               1.4       ,  1.6       ,  1.8       ,  2.        ])
-      temp=self.fil.read()
-      temp=temp.split()
-      temp=temp[79:]
-      temp2=list(temp)
-      ener=[]
-      for i in range(int(len(temp)/40)):
-        ener.append(float(temp[40*i]))
-        temp2.pop(40*i-i)
-      self._energy=np.array(ener)  ###energy in TeV
-      temp2=[float(i) for i in temp2]
-      self._tautable=np.array(temp2).reshape((50,39)).T
-      self._ebl_tau_red_interp=np.zeros(len(self._energy))
-      self.redshift=zeta
-      for i in range(len(self._zarray)-1):
-        if (self.redshift<self._zarray[i]):
-          break
-          #at the end of the cycle the redshift value is bracketed between i and i-1.
-      for j in range(len(self._energy)):
-        self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
-    if (model != 1 and model != 2):
-      print "Allowed numbers are only 1 (Franceschini, 2008) or 2 (Dominguez, 2011)\nPlease choose either 1 or 2\n"
+            temp=self._fil.read()
+            temp=temp.split()
+            temp=temp[79:]
+            temp2=list(temp)
+            ener=[]
+            for i in range(int(len(temp)/40)):
+                ener.append(float(temp[40*i]))
+                temp2.pop(40*i-i)
+            self._energy=np.array(ener)  ###energy in TeV
+            temp2=[float(i) for i in temp2]
+            self._tautable=np.array(temp2).reshape((50,39)).T
+            self._ebl_tau_red_interp=np.zeros(len(self._energy))
+            self.redshift=zeta
+            for i in range(len(self._zarray)-1):
+                if (self.redshift<self._zarray[i]):
+                    break
+                #at the end of the cycle the redshift value is bracketed between i and i-1.
+            for j in range(len(self._energy)):
+                self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
+                
+                
+        if (model == 2 and zeta>2):
+            raise ValueError("Redshift outside boundary [0-2] for this model!")
+        
+        
+        if (model != 1 and model != 2):
+            print("Allowed numbers are only:\n1- (Franceschini, 2008) or\n2- (Dominguez, 2011)\nPlease choose either 1 or 2")
+            raise ValueError("Wrong model number!")
+        print("For this redshift, the Energy Horizon is "+str(self.HorizonEnergy())+" TeV")
+    
+    
+    def GetTauValue(self,energia):
+        '''
+        Computes the optical depth for a photon of the energy required due to EBL absorption
+        energia = energy of the photon in TeV units
+        '''
+        if (energia>self._energy[len(self._energy)-1]):
+            raise ValueError("Energy above the maximum allowed in the EBL model! Exiting")
       
-
+        if (energia<self._energy[0]):
+            print "WARNING: Energy outside the lower boundary of the model, EBL contribution set to 0.0\n"
+            return 0.0
+        for i in range(len(self._energy)):
+            if (energia<self._energy[i]):
+                break
+        value=self._ebl_tau_red_interp[i-1]+(self._ebl_tau_red_interp[i]-self._ebl_tau_red_interp[i-1])/(self._energy[i]-self._energy[i-1])*(energia-self._energy[i-1])
+        return value
     
     
-    
-  def GetTauValue(self,energia):
-    '''
-    Computes the optical depth for a photon of the energy required due to EBL absorption
-    energia = energy of the photon in TeV units
-    '''
-    if (energia>self._energy[len(self._energy)-1]):
-      raise ValueError("Energy above the maximum allowed in the EBL model! Exiting")
-      
-    if (energia<self._energy[0]):
-      print "WARNING: Energy outside the lower boundary of the model, EBL contribution set to 0.0\n"
-      return 0.0
-    for i in range(len(self._energy)):
-      if (energia<self._energy[i]):
-        break
-    value=self._ebl_tau_red_interp[i-1]+(self._ebl_tau_red_interp[i]-self._ebl_tau_red_interp[i-1])/(self._energy[i]-self._energy[i-1])*(energia-self._energy[i-1])
-    return value;
-    
-  def ebl_absorb(self,flux,energia):
-    '''
-    computes gamma-ray flux absorbed by the EBL from intrinsic one
-    flux = instrinsic gamma ray flux
-    energia = energy of the photons in TeV units
-    '''
-    gettau=np.vectorize(self.GetTauValue) #vectorizes the function for array inputs
-    return flux*np.exp(-gettau(energia))
+    def EblAbsorb(self,flux,energia):
+        '''
+        computes gamma-ray flux absorbed by the EBL from intrinsic one
+        flux = instrinsic gamma ray flux
+        energia = energy of the photons in TeV units
+        '''
+        gettau=np.vectorize(self.GetTauValue) #vectorizes the function for array inputs
+        return flux*np.exp(-gettau(energia))
   
-  def ebl_deabsorb(self,flux,energia):
-    '''
-    deabsorb from the ebl effect on the observed gamma-ray flux
-    flux = gamma ray flux
-    energia = energy of the photons in TeV units
-    '''
-    gettau=np.vectorize(self.GetTauValue) #vectorizes the function for array inputs
-    return flux*np.exp(gettau(energia))
-
+  
+    def EblDeabsorb(self,flux,energia):
+        '''
+        deabsorb from the ebl effect on the observed gamma-ray flux
+        flux = gamma ray flux
+        energia = energy of the photons in TeV units
+        '''
+        gettau=np.vectorize(self.GetTauValue) #vectorizes the function for array inputs
+        return flux*np.exp(gettau(energia))
+    
+    
+    def HorizonEnergy(self, tol = 0.01):
+        '''
+        Computes the horizon energy for a particular redshift
+        init_val: initial value for the iterative procedure
+        Return the energy for which the optical depth is 1 +/- tol
+        '''
+        init_val = 0
+        if self._model == 1:
+            init_val = 0.02
+        if self._model == 2:
+            init_val = 0.01
+        while (self.GetTauValue(init_val) <= 1+tol):
+            init_val = init_val*(1+0.01)
+        print(self.GetTauValue(init_val*0.99))
+        return init_val*0.99
+    
