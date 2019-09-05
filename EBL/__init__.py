@@ -26,6 +26,13 @@ class EblModel:
         choose model==2 for Dominguez,2011
         '''
         self._model = model
+        if (model != 1 and model != 2 and model !=3):
+            print("Allowed numbers are only:\n\
+                1- (Franceschini, 2008)\n\
+                2- (Dominguez, 2011)\n\
+                3- (Franceschini, 2017)\nPlease choose 1,2 or 3")
+            raise ValueError("Wrong model number!")
+        
         if (model==1 and zeta<=3):
             '''
             Franceschini(2008)
@@ -82,18 +89,9 @@ class EblModel:
                     [18.24 ,  54.98 ,195.8,  705.7 ,    1320.,2823.,       3915.,      4540., 4945. ],
                     [20.01 ,  59.82 ,210.8,  735.5 ,    1340.,2823.,       3915.,      4540., 4945. ],
                     [21.20 ,  63.03 ,219.8,  744.0 ,    1340.,2823.,       3915.,      4540., 4945. ]]).T
-            self._ebl_tau_red_interp=np.zeros(len(self._energy))
-            self.redshift=zeta
-            for i in range(1,len(self._zarray)):
-                if (self.redshift<self._zarray[i]):
-                    break
-            #at the end of the cycle the redshift value is bracketed between i and i-1.
-            for j in range(len(self._energy)):
-                    self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
         if (model == 1 and zeta>3):
             raise ValueError("Redshift outside boundary [0-3] for this model!")
     
-
         if (model==3 and zeta<=3):
             '''
             Franceschini(2017)
@@ -166,14 +164,6 @@ class EblModel:
                     [39.6796 , 132.463, 642.223, 5410.71, np.inf , np.inf , np.inf , np.inf,  np.inf ,  np.inf],
                     [99.7780 , 333.153, 1579.26, np.inf , np.inf , np.inf , np.inf , np.inf,  np.inf ,  np.inf],
                     [235.983 , 777.945, 3498.49, np.inf , np.inf , np.inf , np.inf , np.inf , np.inf ,  np.inf]]).T
-            self._ebl_tau_red_interp=np.zeros(len(self._energy))
-            self.redshift=zeta
-            for i in range(1,len(self._zarray)):
-                if (self.redshift<self._zarray[i]):
-                    break
-            #at the end of the cycle the redshift value is bracketed between i and i-1.
-            for j in range(len(self._energy)):
-                    self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
         if (model == 1 and zeta>3):
             raise ValueError("Redshift outside boundary [0-3] for this model!")
     
@@ -200,24 +190,18 @@ class EblModel:
                 temp2.pop(40*i-i)
             self._energy=np.array(ener)  ###energy in TeV
             temp2=[float(i) for i in temp2]
-            self._tautable=np.array(temp2).reshape((50,39)).T
-            self._ebl_tau_red_interp=np.zeros(len(self._energy))
-            self.redshift=zeta
-            for i in range(1,len(self._zarray)):
-                if (self.redshift<self._zarray[i]):
-                    break
-                #at the end of the cycle the redshift value is bracketed between i and i-1.
-            for j in range(len(self._energy)):
-                self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
-                
-                
+            self._tautable=np.array(temp2).reshape((50,39)).T                
         if (model == 2 and zeta>2):
             raise ValueError("Redshift outside boundary [0-2] for this model!")
         
-        
-        if (model != 1 and model != 2 and model !=3):
-            print("Allowed numbers are only:\n1- (Franceschini, 2008) or\n2- (Dominguez, 2011)\nPlease choose either 1 or 2")
-            raise ValueError("Wrong model number!")
+        self._ebl_tau_red_interp=np.zeros(len(self._energy))
+        self.redshift=zeta
+        for i in range(1,len(self._zarray)):
+            if (self.redshift<self._zarray[i]):
+                break
+        #at the end of the cycle the redshift value is bracketed between i and i-1.
+        for j in range(len(self._energy)):
+            self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
         print("For this redshift, the Energy Horizon is "+str(self.HorizonEnergy())+" TeV")
     
     
