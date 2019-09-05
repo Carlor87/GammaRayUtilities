@@ -84,11 +84,11 @@ class EblModel:
                     [21.20 ,  63.03 ,219.8,  744.0 ,    1340.,2823.,       3915.,      4540., 4945. ]]).T
             self._ebl_tau_red_interp=np.zeros(len(self._energy))
             self.redshift=zeta
-            for i in range(len(self._zarray)-1):
+            for i in range(1,len(self._zarray)):
                 if (self.redshift<self._zarray[i]):
                     break
-                #at the end of the cycle the redshift value is bracketed between i and i-1.
-                for j in range(len(self._energy)):
+            #at the end of the cycle the redshift value is bracketed between i and i-1.
+            for j in range(len(self._energy)):
                     self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
         if (model == 1 and zeta>3):
             raise ValueError("Redshift outside boundary [0-3] for this model!")
@@ -168,11 +168,11 @@ class EblModel:
                     [235.983 , 777.945, 3498.49, np.inf , np.inf , np.inf , np.inf , np.inf , np.inf ,  np.inf]]).T
             self._ebl_tau_red_interp=np.zeros(len(self._energy))
             self.redshift=zeta
-            for i in range(len(self._zarray)-1):
+            for i in range(1,len(self._zarray)):
                 if (self.redshift<self._zarray[i]):
                     break
-                #at the end of the cycle the redshift value is bracketed between i and i-1.
-                for j in range(len(self._energy)):
+            #at the end of the cycle the redshift value is bracketed between i and i-1.
+            for j in range(len(self._energy)):
                     self._ebl_tau_red_interp[j]=self._tautable[i-1][j]+(self._tautable[i][j]-self._tautable[i-1][j])/(self._zarray[i]-self._zarray[i-1])*(self.redshift-self._zarray[i-1]) #linear interpolation between points
         if (model == 1 and zeta>3):
             raise ValueError("Redshift outside boundary [0-3] for this model!")
@@ -203,7 +203,7 @@ class EblModel:
             self._tautable=np.array(temp2).reshape((50,39)).T
             self._ebl_tau_red_interp=np.zeros(len(self._energy))
             self.redshift=zeta
-            for i in range(len(self._zarray)-1):
+            for i in range(1,len(self._zarray)):
                 if (self.redshift<self._zarray[i]):
                     break
                 #at the end of the cycle the redshift value is bracketed between i and i-1.
@@ -227,14 +227,14 @@ class EblModel:
         energia = energy of the photon in TeV units
         '''
         if (energia>self._energy[len(self._energy)-1]):
-            print("WARNING: Energy above the maximum allowed by the model! Returning: inf")
+            #print("WARNING: Energy above the maximum allowed by the model! Returning: inf")
             return np.inf
             #raise ValueError("Energy above the maximum allowed in the EBL model! Exiting")
       
         if (energia<self._energy[0]):
-            print("WARNING: Energy outside the lower boundary of the model, EBL contribution set to 0.0\n")
+            #print("WARNING: Energy outside the lower boundary of the model, EBL contribution set to 0.0\n")
             return 0.0
-        for i in range(len(self._energy)):
+        for i in range(1,len(self._energy)):
             if (energia<self._energy[i]):
                 break
         value=self._ebl_tau_red_interp[i-1]+(self._ebl_tau_red_interp[i]-self._ebl_tau_red_interp[i-1])/(self._energy[i]-self._energy[i-1])*(energia-self._energy[i-1])
