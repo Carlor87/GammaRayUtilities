@@ -1,12 +1,15 @@
 import os,sys
 import numpy as np
 
-class redshift:
+__all__ = ["EblModel"]
+
+class EblModel:
     '''
     Class to consider the contribution of the Extragalactic Background Light (EBL) on gamma ray data,
     In the initialization it is possible to choose between the EBL model developed by Franceschini et al. (2008)
     and the model developed by Dominguez (2011).
     For model 1 (Franceschini,2008), zeta between 0.01 and 3.
+    For model 3 (Franceschini,2017), zeta between 0.01 and 3.
     for model 2 (Dominguez,2011), zeta between 0.01 and 2.
     For redshifts lower than these values, the interpolation is done with 0
     and the results might not be accurate
