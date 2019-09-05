@@ -227,12 +227,12 @@ class EblModel:
         energia = energy of the photon in TeV units
         '''
         if (energia>self._energy[len(self._energy)-1]):
-            #print("WARNING: Energy above the maximum allowed by the model! Returning: inf")
+            print("WARNING: Energy above the maximum allowed by the model! Returning: inf")
             return np.inf
             #raise ValueError("Energy above the maximum allowed in the EBL model! Exiting")
       
         if (energia<self._energy[0]):
-            #print("WARNING: Energy outside the lower boundary of the model, EBL contribution set to 0.0\n")
+            print("WARNING: Energy outside the lower boundary of the model, EBL contribution set to 0.0\n")
             return 0.0
         for i in range(1,len(self._energy)):
             if (energia<self._energy[i]):
