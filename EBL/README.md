@@ -14,7 +14,7 @@ import EBL
 redshift = 0.5
 model = 1 #Franceschini 2008
 
-ebl = EblModel(redshift,model)
+ebl = EBL.EblModel(redshift,model)
 ```
 
 Once the class is initializated, there are a couple of basic built-in methods like:
