@@ -6,7 +6,9 @@ contents:
 folder models -> data files for all the EBL models available.
 
 The model from Finke and Dominguez are actually extracted from their implementation in the software gammapy (extracted by Edna Ruiz)
+
 The model from Kneiske&Dole and Inoue et al. are form [here](https://github.com/fermi-lat/celestialSources/tree/master/eblAtten/data)
+
 The rest come form the original papers
 
 # Usage
