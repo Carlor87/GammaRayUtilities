@@ -67,7 +67,7 @@ class Spectrum:
         return self.ind,np.sqrt(self.cov[1][1])
         
     
-class SpectrumPL(spectrum):
+class SpectrumPL(Spectrum):
     """
     Class for a PL spectrum
     will be made something with inheritance
@@ -103,7 +103,7 @@ class SpectrumPL(spectrum):
         return delta(self.energy)
 
     
-class SpectumLogP(spectrum):
+class SpectumLogP(Spectrum):
     """
     Class for a PL spectrum
     will be made something with inheritance
@@ -120,7 +120,7 @@ class SpectumLogP(spectrum):
         Derivative of the fit function
         wrt to normalization
         '''
-        return fit_function(x)/self.pars[0]
+        return self.fit_function(x)/self.pars[0]
     
     def fitfunc_a(self,x):
         '''
