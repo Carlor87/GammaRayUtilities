@@ -16,3 +16,8 @@ Small package that computes the absorption (and the deabsorption) of the flux of
  - Inoue et al., 2013 (from [this](https://ui.adsabs.harvard.edu/abs/2013ApJ...768..197I/abstract) paper) - the tabulated data are from [this](https://github.com/fermi-lat/celestialSources/tree/master/eblAtten/data) link actually
 
 There is implemented the function to compute the optical depth given energy and redshift and also the Horizon energy for a given redshift (energy where the optical depth tau = 1 for a given redshift).
+
+# 2- SpecralPlotter
+This is avery simple class that I am still editing that allows to simply compare the results of a spectral fit (so far only PowerLaw or LogParabola) given the fitted parameters and the covariance matrix. The class can reconstruct, via the error propagation, the confidence interval of the fit and show it in the plot.
+
+Proper documentation should still be written, so far I have just written some comments in the source code.
