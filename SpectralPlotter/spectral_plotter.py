@@ -1,6 +1,9 @@
 """
 Small class to overplot fit results.
 
+The user should take care of writing the correct units
+and labels for the axis of the plots.
+
 Author: Carlo Romoli - MPIK
 """
 
@@ -15,7 +18,7 @@ class Spectrum:
     def __init__(self,pars,s,cov,emin,emax,text,shiftfactor=1):
         self.pars = pars
         self.scale = s  # normalization energy
-        self.cov = cov  # covariance matrix 
+        self.cov = np.array(cov)  # covariance matrix 
         self.emin = emin  # minimum energy
         self.emax = emax  # maximum energy
         self.shiftfactor = shiftfactor  # optional shift value (to check possible energy shifts)
@@ -65,7 +68,22 @@ class Spectrum:
         Return index and its error
         '''
         return self.ind,np.sqrt(self.cov[1][1])
-        
+    
+    def print_parameters(self):
+        '''
+        Print the parameters with the corresponding errors
+        '''
+        for par,err in zip(self.pars,self.cov.diagonal()):
+            print("%.2e +/- %.2e"%(par,np.sqrt(err)))
+            
+    def get_parameter(self, index):
+        '''
+        Returns value and error of the 'index' parameter
+        '''
+        if index > (len(self.pars)-1):
+            raise IndexError("index exceeds length of the parameter list")
+        return self.pars[index],np.sqrt(self.cov.diagonal()[index])
+    
     
 class SpectrumPL(Spectrum):
     """
@@ -102,7 +120,7 @@ class SpectrumPL(Spectrum):
         delta = np.vectorize(delta)
         return delta(self.energy)
 
-    
+
 class SpectumLogP(Spectrum):
     """
     Class for a PL spectrum
