@@ -20,4 +20,4 @@ There is implemented the function to compute the optical depth given energy and 
 # 2- SpecralPlotter
 This is avery simple class that I am still editing that allows to simply compare the results of a spectral fit (so far only PowerLaw or LogParabola) given the fitted parameters and the covariance matrix. The class can reconstruct, via the error propagation, the confidence interval of the fit and show it in the plot.
 
-Proper documentation should still be written, so far I have just written some comments in the source code.
+See [here](https://github.com/Carlor87/GammaRayUtilities/blob/master/SpectralPlotter/README.md) for details.
